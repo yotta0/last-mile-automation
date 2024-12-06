@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y libpq-dev gcc
+RUN apt-get update && apt-get install -y python3.11-dev libpq-dev gcc
 
 WORKDIR /app
 
@@ -15,4 +15,4 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 EXPOSE 5000
 
-CMD ["/app/run.sh"]
+CMD ["bash", "/app/run.sh"]
