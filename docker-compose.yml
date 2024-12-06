@@ -11,7 +11,7 @@ services:
         condition: service_healthy
         restart: true
     healthcheck:
-      test: ["CMD", "sh", "-c", "curl -f http://localhost:4052 || exit 1"]
+      test: ["CMD", "sh", "-c", "curl -f http://localhost:5000 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -23,7 +23,7 @@ services:
       - .env
     image: postgres:14.6
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     command: [ "postgres", "-c", "log_statement=all", "-c", "log_destination=stderr" ]
     volumes:
       - operations-db-data:/var/lib/postgresql/data
