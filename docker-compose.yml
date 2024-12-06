@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    container_name: last-mile-automation-app
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    depends_on:
+      operations-db:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -f http://localhost:4052 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  operations-db:
+    container_name: operations-db
+    env_file:
+      - .env
+    image: postgres:14.6
+    ports:
+      - "5432:5432"
+    command: [ "postgres", "-c", "log_statement=all", "-c", "log_destination=stderr" ]
+    volumes:
+      - operations-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  operations-db-data:
