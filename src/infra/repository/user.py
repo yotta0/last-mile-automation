@@ -1,6 +1,5 @@
 from typing import Type, List
 from pydantic import EmailStr
-from uuid import UUID
 from sqlalchemy.orm import Session
 
 from src.domain.entities.user import User
@@ -14,7 +13,7 @@ class UserRepository(IUserRepository):
     def get_users_paginated(self) -> List[Type[User]]:
         return self.db.query(User).all()
 
-    def find_by_id(self, user_id: UUID) -> Type[User]:
+    def find_by_id(self, user_id: int) -> Type[User]:
         return self.db.query(User).filter(User.id == user_id).first()
 
     def find_by_email(self, email: EmailStr) -> Type[User]:

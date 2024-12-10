@@ -1,6 +1,5 @@
-import re
-from uuid import UUID
 from passlib.context import CryptContext
+from datetime import datetime as dt
 
 from src.domain.exception.domain_exception import DomainException
 from src.domain.exception.error_code import ErrorCode
@@ -29,7 +28,8 @@ class AuthService:
 
         refresh_token = JWTHandler.create_refresh_token(payload)
         access_token = JWTHandler.create_access_token(payload)
-
+        user.last_login = dt.utcnow()
+        self.user_repository.save(user)
         return TokenSchema(refresh_token=refresh_token, access_token=access_token).model_dump()
 
     def verify_old_password(self, old_password, password) -> bool:
