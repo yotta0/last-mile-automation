@@ -22,11 +22,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from src.domain.entities.hub import Hub
 from src.domain.entities.user import User
-from src.domain.entities.client import Client
-from src.domain.entities.attendance import Attendance
-from src.domain.entities.green_angel import GreenAngel
 from src.infra.database.database import Base
 
 target_metadata = Base.metadata

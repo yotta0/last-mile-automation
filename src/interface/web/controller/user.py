@@ -1,6 +1,8 @@
 from typing import List
+from uuid import UUID
 
 from src.interface.web.schemas.user import (UserCreateSchema, UserUpdateSchema)
+from src.domain.entities.user import User
 from src.application.service.user import UserService
 
 
@@ -11,14 +13,14 @@ class UserController:
     def get_users(self) -> List[dict]:
         return self.user_service.get_users_paginated()
 
-    def get_user(self, user_id: int) -> dict:
+    def get_user(self, user_id: UUID) -> dict:
         return self.user_service.find_user(user_id)
 
     def create_user(self, user_create: UserCreateSchema) -> dict:
         return self.user_service.create_user(user_create)
 
-    def update_user(self, user_id: int, user_update: UserUpdateSchema) -> dict:
+    def update_user(self, user_id: UUID, user_update: UserUpdateSchema) -> dict:
         return self.user_service.update_user(user_id, user_update)
 
-    def delete_user(self, user_id: int) -> dict:
+    def delete_user(self, user_id: UUID) -> dict:
         return self.user_service.delete_user(user_id)

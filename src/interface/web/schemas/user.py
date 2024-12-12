@@ -1,3 +1,4 @@
+from uuid import UUID
 from typing import Optional
 from pydantic import BaseModel, EmailStr
 
@@ -7,7 +8,7 @@ class UserAuthSchema(BaseModel):
     password: str
 
 class UserSchema(BaseModel):
-    id: int
+    id: UUID
     name: str
     email: EmailStr
     is_active: bool

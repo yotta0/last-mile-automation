@@ -1,4 +1,5 @@
 import re
+from uuid import UUID
 
 from src.application.service.auth import AuthService
 from src.domain.exception.domain_exception import DomainException
@@ -20,7 +21,7 @@ class UserService:
         users = self.user_repository.get_users_paginated()
         return [UserSchema.model_validate(user).model_dump() for user in users]
 
-    def find_user(self, user_id: int) -> dict:
+    def find_user(self, user_id: UUID) -> dict:
         user = self.user_repository.find_by_id(user_id)
         if not user:
             raise DomainException(ErrorCode.USER_NOT_FOUND)
@@ -42,7 +43,7 @@ class UserService:
         self.user_repository.save(user)
         return UserSchema.model_validate(user).model_dump()
 
-    def update_user(self, user_id: int, user_update: UserUpdateSchema) -> dict:
+    def update_user(self, user_id: UUID, user_update: UserUpdateSchema) -> dict:
         user = self.user_repository.find_by_id(user_id)
         if not user:
             raise DomainException(ErrorCode.USER_NOT_FOUND)
@@ -55,7 +56,7 @@ class UserService:
         self.user_repository.save(user)
         return UserSchema.model_validate(user).model_dump()
 
-    def delete_user(self, user_id: int) -> dict:
+    def delete_user(self, user_id: UUID) -> dict:
         user = self.user_repository.find_by_id(user_id)
         if not user:
             raise DomainException(ErrorCode.USER_NOT_FOUND)

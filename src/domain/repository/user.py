@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from uuid import UUID
 from pydantic import EmailStr
 
 from src. domain.entities.user import User
@@ -12,7 +13,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_id(self, user_id : int):
+    def find_by_id(self, user_id : UUID):
         pass
 
     @abstractmethod
