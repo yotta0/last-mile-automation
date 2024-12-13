@@ -26,6 +26,9 @@ def convert_date(date_str):
             return pd.to_datetime(date_str.strip(), format='mixed', dayfirst=True).strftime('%Y-%m-%d %H:%M:%S')
 
 def import_csv():
+    if not os.path.isfile(CSV_FILE_PATH):
+        print("CSV file not found!")
+        return
     df = pd.read_csv(CSV_FILE_PATH, delimiter=';')
     df = df.head(10000)
 

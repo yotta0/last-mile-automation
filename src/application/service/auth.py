@@ -35,10 +35,10 @@ class AuthService:
     def verify_old_password(self, old_password, password) -> bool:
         return self.pwd_context.verify(old_password, password)
 
-    def refresh_token(self, sub, id) -> AccessTokenSchema:
+    def refresh_token(self, sub: str, id: int) -> dict:
         payload = {
             "sub": sub,
             "id": id
         }
         access_token = JWTHandler.create_access_token(payload)
-        return AccessTokenSchema(access_token=access_token)
+        return AccessTokenSchema(access_token=access_token).model_dump()
