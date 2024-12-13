@@ -10,8 +10,8 @@ class AttendanceService:
     def __init__(self, attendance_repository: IAttendanceRepository):
         self.attendance_repository = attendance_repository
 
-    def get_attendances_paginated(self, page: int, per_page: int) -> dict:
-        attendances = self.attendance_repository.get_attendances_paginated(page, per_page)
+    def get_attendances_paginated(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
+        attendances = self.attendance_repository.get_attendances_paginated(page, per_page, filters, order_by, order_direction)
         return AttendancesPaginatedSchema.model_validate(attendances).model_dump()
 
     def find_attendance(self, attendance_id: int) -> dict:

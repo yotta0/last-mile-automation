@@ -10,8 +10,8 @@ class GreenAngelService:
     def __init__(self, green_angel_repository: IGreenAngelRepository):
         self.green_angel_repository = green_angel_repository
 
-    def get_green_angels_paginated(self, page: int, per_page: int) -> dict:
-        green_angels = self.green_angel_repository.get_green_angels_paginated(page, per_page)
+    def get_green_angels_paginated(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
+        green_angels = self.green_angel_repository.get_green_angels_paginated(page, per_page, filters, order_by, order_direction)
         return GreenAngelsPaginatedSchema.model_validate(green_angels).model_dump()
 
     def find_green_angel(self, green_angel_id: int) -> dict:

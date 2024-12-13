@@ -65,7 +65,10 @@ def get_clients(client_controller: ClientController = Provide[Container.client_c
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
-    return jsonify(client_controller.get_clients(page, per_page))
+    order_by = request.args.get('order_by')
+    order_direction = request.args.get('order_direction')
+
+    return jsonify(client_controller.get_clients(page, per_page, order_by, order_direction))
 
 @client_bp.route('/<int:client_id>', methods=['GET'])
 @inject

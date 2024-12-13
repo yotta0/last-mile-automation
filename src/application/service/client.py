@@ -10,8 +10,8 @@ class ClientService:
     def __init__(self, client_repository: IClientRepository):
         self.client_repository = client_repository
 
-    def get_clients_paginated(self, page: int, per_page: int) -> dict:
-        clients = self.client_repository.get_clients_paginated(page, per_page)
+    def get_clients_paginated(self, page: int, per_page: int, order_by: str, order_direction: str) -> dict:
+        clients = self.client_repository.get_clients_paginated(page, per_page, order_by, order_direction)
         return ClientsPaginatedSchema.model_validate(clients).model_dump()
 
     def find_client(self, client_id: int) -> dict:

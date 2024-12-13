@@ -12,10 +12,11 @@ class ClientSchema(BaseModel):
         from_attributes = True
 
 class ClientsPaginatedSchema(BaseModel):
+    size: int
     total_pages: int
     page: int
     per_page: int
-    clients: list[ClientSchema]
+    items: list[ClientSchema]
 
     class Config:
         arbitrary_types_allowed = True

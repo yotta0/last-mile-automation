@@ -6,7 +6,7 @@ from src.domain.entities.green_angel import GreenAngel
 class IGreenAngelRepository(ABC):
 
     @abstractmethod
-    def get_green_angels_paginated(self, page: int, per_page: int):
+    def get_green_angels_paginated(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
         pass
 
     @abstractmethod

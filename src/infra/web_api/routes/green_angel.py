@@ -65,7 +65,14 @@ def get_green_angels(green_angel_controller: GreenAngelController = Provide[Cont
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
-    return jsonify(green_angel_controller.get_green_angels(page, per_page))
+    name = request.args.get('name')
+    order_by = request.args.get('order_by')
+    order_direction = request.args.get('order_direction')
+
+    filters = {
+        'name': name
+    }
+    return jsonify(green_angel_controller.get_green_angels(page, per_page, filters, order_by, order_direction))
 
 @green_angel_bp.route('/<int:green_angel_id>', methods=['GET'])
 @inject

@@ -1,10 +1,12 @@
 import os
 import pandas as pd
+import threading
 import psycopg2
 from datetime import datetime as dt
 from dotenv import load_dotenv
 from psycopg2 import pool
 from passlib.context import CryptContext
+import time
 
 load_dotenv()
 
@@ -29,43 +31,80 @@ def import_csv():
     if not os.path.isfile(CSV_FILE_PATH):
         print("CSV file not found!")
         return
-    df = pd.read_csv(CSV_FILE_PATH, delimiter=';')
-    df = df.head(10000)
 
-    df['data_limite'] = df['data_limite'].apply(convert_date)
-    df['data_de_atendimento'] = df['data_de_atendimento'].apply(convert_date)
+    batch_size = 1000
+    df_iter = pd.read_csv(CSV_FILE_PATH, delimiter=';', chunksize=batch_size)
+    batch_num = 0
 
-    green_angels_data = [(row['angel'], True, dt.utcnow(), dt.utcnow()) for index, row in df.iterrows()]
-    hubs_data = [(row['polo'], True, dt.utcnow(), dt.utcnow()) for index, row in df.iterrows()]
-    clients_data = [(row['id_cliente'], True, dt.utcnow(), dt.utcnow()) for index, row in df.iterrows()]
-    attendances_data = [(row['id_atendimento'], row['id_cliente'], None, None, row['data_limite'], row['data_de_atendimento'], True, dt.utcnow(), dt.utcnow()) for index, row in df.iterrows()]
+    for batch_df in df_iter:
+        start_time = time.time()
 
-    conn = conn_pool.getconn()
-    cur = conn.cursor()
+        batch_df['data_limite'] = batch_df['data_limite'].apply(convert_date)
+        batch_df['data_de_atendimento'] = batch_df['data_de_atendimento'].apply(convert_date)
 
-    green_angel_ids = []
-    for data in green_angels_data:
-        cur.execute("INSERT INTO green_angels (name, is_active, created_at, updated_at) VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING returning id", data)
-        green_angel_ids.append(cur.fetchone()[0])
+        green_angels_data = [(row['angel'], True, dt.utcnow(), dt.utcnow()) for index, row in batch_df.iterrows()]
+        hubs_data = [(row['polo'], True, dt.utcnow(), dt.utcnow()) for index, row in batch_df.iterrows()]
+        clients_data = [(row['id_cliente'], True, dt.utcnow(), dt.utcnow()) for index, row in batch_df.iterrows()]
 
-    hub_ids = []
-    for data in hubs_data:
-        cur.execute("INSERT INTO hubs (name, is_active, created_at, updated_at) VALUES (%s, %s, %s, %s) ON CONFLICT (name) DO UPDATE SET updated_at = NOW() returning id", data)
-        hub_ids.append(cur.fetchone()[0])
+        conn = conn_pool.getconn()
+        cur = conn.cursor()
 
-    client_id = []
-    for data in clients_data:
-        cur.execute("INSERT INTO clients (id, is_active, created_at, updated_at) VALUES (%s, %s, %s, %s) ON CONFLICT (id) DO UPDATE SET updated_at = NOW() returning id", data)
-        client_id.append(cur.fetchone()[0])
+        try:
+            # Process the batch in the database
+            green_angel_ids = {}
+            for data in green_angels_data:
+                cur.execute(
+                    "INSERT INTO green_angels (name, is_active, created_at, updated_at) VALUES (%s, %s, %s, %s) ON CONFLICT (name) DO UPDATE SET updated_at = NOW() RETURNING id, name",
+                    data)
+                result = cur.fetchone()
+                green_angel_ids[result[1]] = result[0]
 
-    for i in range(len(attendances_data)):
-        attendances_data[i] = (attendances_data[i][0], client_id[i], green_angel_ids[i], hub_ids[i], attendances_data[i][4], attendances_data[i][5], attendances_data[i][6], attendances_data[i][7], attendances_data[i][8])
+            hub_ids = {}
+            for data in hubs_data:
+                cur.execute(
+                    "INSERT INTO hubs (name, is_active, created_at, updated_at) VALUES (%s, %s, %s, %s) ON CONFLICT (name) DO UPDATE SET updated_at = NOW() RETURNING id, name",
+                    data)
+                result = cur.fetchone()
+                hub_ids[result[1]] = result[0]
 
-    cur.executemany("INSERT INTO attendances (id, client_id, green_angel_id, hub_id, limit_date, attendance_date, is_active, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING", attendances_data)
+            client_ids = {}
+            for data in clients_data:
+                cur.execute(
+                    "INSERT INTO clients (id, is_active, created_at, updated_at) VALUES (%s, %s, %s, %s) ON CONFLICT (id) DO UPDATE SET updated_at = NOW() RETURNING id",
+                    data)
+                result = cur.fetchone()
+                client_ids[result[0]] = result[0]
 
-    conn.commit()
-    cur.close()
-    conn_pool.putconn(conn)
+            attendances_data = [(row['id_atendimento'], client_ids.get(row['id_cliente']), green_angel_ids.get(row['angel']),
+                                 hub_ids.get(row['polo']), row['data_limite'],
+                                 row['data_de_atendimento'], True, dt.utcnow(), dt.utcnow()) for index, row in batch_df.iterrows()]
+
+            # Filter out rows with null green_angel_id, hub_id, or client_id
+            attendances_data = [data for data in attendances_data if data[1] is not None and data[2] is not None and data[3] is not None]
+
+            cur.executemany(
+                "INSERT INTO attendances (id, client_id, green_angel_id, hub_id, limit_date, attendance_date, is_active, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING",
+                attendances_data)
+
+            conn.commit()
+        except Exception as e:
+            print(f"Error processing batch {batch_num}: {e}")
+            conn.rollback()
+        finally:
+            cur.close()
+            conn_pool.putconn(conn)
+
+        # Evaluate the processing time of the batch
+        elapsed_time = time.time() - start_time
+        print(f"Processed batch {batch_num} with {len(batch_df)} rows in {elapsed_time:.2f} seconds.")
+
+        # Dynamically adjust the batch size (optional)
+        if elapsed_time < 1:
+            batch_size = min(batch_size + 1000, 10000)  # Gradually increase the batch size
+        elif elapsed_time > 5:
+            batch_size = max(batch_size - 500, 500)  # Reduce the batch size if too slow
+
+        batch_num += 1
 
 def seed_users():
     conn = conn_pool.getconn()
@@ -80,10 +119,15 @@ def seed_users():
     cur.close()
     conn_pool.putconn(conn)
 
+def run_import_csv_in_background():
+    thread = threading.Thread(target=import_csv)
+    thread.start()
+    return thread
+
 if __name__ == "__main__":
-    print("Importing CSV data...")
-    import_csv()
-    print("CSV data imported successfully!")
     print("Seeding users...")
     seed_users()
     print("Users seeded successfully!")
+    print("Importing CSV data in batches...")
+    run_import_csv_in_background()
+    print("CSV data imported successfully!")

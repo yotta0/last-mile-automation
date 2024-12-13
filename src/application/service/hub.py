@@ -10,8 +10,8 @@ class HubService:
     def __init__(self, hub_repository: IHubRepository):
         self.hub_repository = hub_repository
 
-    def get_hubs_paginated(self, page: int, per_page: int) -> dict:
-        hubs = self.hub_repository.get_hubs_paginated(page, per_page)
+    def get_hubs_paginated(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
+        hubs = self.hub_repository.get_hubs_paginated(page, per_page, filters, order_by, order_direction)
         return HubsPaginatedSchema.model_validate(hubs).model_dump()
 
     def find_hub(self, hub_id: int) -> dict:

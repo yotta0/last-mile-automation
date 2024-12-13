@@ -8,7 +8,7 @@ from src. domain.entities.user import User
 class IUserRepository(ABC):
 
     @abstractmethod
-    def get_users_paginated(self):
+    def get_users_paginated(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
         pass
 
     @abstractmethod

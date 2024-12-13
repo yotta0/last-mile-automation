@@ -2,6 +2,10 @@ from pydantic import BaseModel, field_validator
 from datetime import datetime
 from typing import Optional
 
+from src.interface.web.schemas.green_angel import GreenAngelSchema
+from src.interface.web.schemas.hub import HubSchema
+from src.interface.web.schemas.client import ClientSchema
+
 
 class AttendanceSchema(BaseModel):
     id: int
@@ -17,15 +21,29 @@ class AttendanceSchema(BaseModel):
         arbitrary_types_allowed = True
         from_attributes = True
 
+
+class AttendanceJoinedSchema(AttendanceSchema):
+    green_angel: GreenAngelSchema
+    hub: HubSchema
+    client: ClientSchema
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
+        from_attributes = True
+
+
 class AttendancesPaginatedSchema(BaseModel):
+    size: int
     total_pages: int
     page: int
     per_page: int
-    attendances: list[AttendanceSchema]
+    items: list[AttendanceJoinedSchema]
 
     class Config:
         arbitrary_types_allowed = True
         from_attributes = True
+
 
 class AttendanceCreateSchema(BaseModel):
     client_id: int

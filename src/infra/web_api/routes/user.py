@@ -38,7 +38,18 @@ def get_users(user_controller: UserController = Provide[Container.user_controlle
       500:
         description: Internal server error
     """
-    return jsonify(user_controller.get_users())
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 20, type=int)
+    name = request.args.get('name')
+    email = request.args.get('email')
+    order_by = request.args.get('order_by')
+    order_direction = request.args.get('order_direction')
+
+    filters = {
+        'name': name,
+        'email': email
+    }
+    return jsonify(user_controller.get_users(page, per_page, filters, order_by, order_direction))
 
 @user_bp.route('/<int:user_id>', methods=['GET'])
 @inject
