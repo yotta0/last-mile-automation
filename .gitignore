@@ -3,4 +3,5 @@
 .idea
 .env
 __pycache__
+.pytest_cache
 seed.csv

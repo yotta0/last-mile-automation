@@ -1,10 +1,16 @@
 from flask import Flask, jsonify
 from flask.json.provider import DefaultJSONProvider
+from pydantic import ValidationError
+from flasgger import Swagger
 
 from src.infra.init.injector import Container
 from src.infra.web_api.routes.user import user_bp
 from src.infra.web_api.routes.auth import auth_bp
 from src.infra.web_api.routes.attendance import attendance_bp
+from src.infra.web_api.routes.green_angel import green_angel_bp
+from src.infra.web_api.routes.hub import hub_bp
+from src.infra.web_api.routes.client import client_bp
+
 from src.domain.exception.domain_exception import DomainException
 from src.interface.exception.interface_exception import InterfaceException
 
@@ -42,10 +48,22 @@ def handle_interface_exception(error):
     response.status_code = error.error_code.code
     return response
 
+@app.errorhandler(ValidationError)
+def handle_validation_error(error):
+    response = jsonify({
+        'errors': error.errors()
+    })
+    response.status_code = 422
+    return response
+
 app.register_blueprint(user_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(attendance_bp)
+app.register_blueprint(green_angel_bp)
+app.register_blueprint(hub_bp)
+app.register_blueprint(client_bp)
 
+swagger = Swagger(app)
 
 if __name__ == '__main__':
     app.run()

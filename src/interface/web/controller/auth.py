@@ -8,3 +8,6 @@ class AuthController:
 
     def login(self, user_auth: UserAuthSchema) -> dict:
         return self.auth_service.verify_password(user_auth)
+
+    def refresh(self, sub: str, id: int)-> dict:
+        return self.auth_service.refresh_token(sub, id)
