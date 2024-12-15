@@ -9,14 +9,28 @@ class ClientRepository(IClientRepository):
     def __init__(self, db: Session):
         self.db = db
 
-    def get_clients_paginated(self, page: int, per_page: int) -> dict:
+    def get_clients_paginated(self, page: int, per_page: int, order_by: str = 'id', order_direction: str = 'asc') -> dict:
         total = self.db.query(Client).count()
-        clients = self.db.query(Client).offset((page - 1) * per_page).limit(per_page).all()
+
+        query = self.db.query(Client).filter(Client.is_active == True)
+
+        allowed_order_by = ['id', 'is_active', 'created_at', 'updated_at']
+        if order_by not in allowed_order_by:
+            order_by = 'id'
+
+        if order_direction == 'desc':
+            query = query.order_by(getattr(Client, order_by).desc())
+        else:
+            query = query.order_by(getattr(Client, order_by))
+
+        page = page if page > 0 else 1
+        clients = query.offset((page - 1) * per_page).limit(per_page).all()
         return {
+            'size': len(clients),
             'total_pages': (total + per_page - 1) // per_page,
             'page': page,
             'per_page': per_page,
-            'clients': clients
+            'items': clients
         }
 
     def find_by_id(self, client_id: int) -> Type[Client]:

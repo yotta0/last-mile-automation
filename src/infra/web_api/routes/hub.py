@@ -65,7 +65,14 @@ def get_hubs(hub_controller: HubController = Provide[Container.hub_controller]):
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
-    return jsonify(hub_controller.get_hubs(page, per_page))
+    name = request.args.get('name')
+    order_by = request.args.get('order_by')
+    order_direction = request.args.get('order_direction')
+
+    filters = {
+        'name': name
+    }
+    return jsonify(hub_controller.get_hubs(page, per_page, filters, order_by, order_direction))
 
 @hub_bp.route('/<int:hub_id>', methods=['GET'])
 @inject

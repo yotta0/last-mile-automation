@@ -18,7 +18,7 @@ def get_attendances(attendance_controller: AttendanceController = Provide[Contai
     tags:
       - Attendances
     summary: Retrieve a paginated list of attendances
-    description: Retrieve a paginated list of attendances with optional page and per_page query parameters.
+    description: Retrieve a paginated list of attendances with optional query parameters for filtering and ordering.
     parameters:
       - name: page
         in: query
@@ -32,22 +32,70 @@ def get_attendances(attendance_controller: AttendanceController = Provide[Contai
         required: false
         default: 20
         description: The number of attendances to retrieve per page.
+      - name: client_id
+        in: query
+        type: integer
+        required: false
+        description: Filter by client ID.
+      - name: green_angel_id
+        in: query
+        type: integer
+        required: false
+        description: Filter by green angel ID.
+      - name: green_angel_name
+        in: query
+        type: string
+        required: false
+        description: Filter by green angel name.
+      - name: hub_id
+        in: query
+        type: integer
+        required: false
+        description: Filter by hub ID.
+      - name: hub_name
+        in: query
+        type: string
+        required: false
+        description: Filter by hub name.
+      - name: attendance_date
+        in: query
+        type: string
+        required: false
+        description: Filter by attendance date.
+      - name: limit_date
+        in: query
+        type: string
+        required: false
+        description: Filter by limit date.
+      - name: order_by
+        in: query
+        type: string
+        required: false
+        description: Order by a specific field.
+      - name: order_direction
+        in: query
+        type: string
+        required: false
+        description: Order direction (asc or desc).
     responses:
       200:
         description: A list of attendances
         schema:
           type: object
           properties:
-            total:
+            size:
               type: integer
-              description: The total number of attendances.
+              description: The number of attendances in the current page.
+            total_pages:
+              type: integer
+              description: The total number of pages.
             page:
               type: integer
               description: The current page number.
             per_page:
               type: integer
               description: The number of attendances per page.
-            attendances:
+            items:
               type: array
               items:
                 type: object
@@ -55,9 +103,57 @@ def get_attendances(attendance_controller: AttendanceController = Provide[Contai
                   id:
                     type: integer
                     description: The attendance ID.
-                  name:
+                  client_id:
+                    type: integer
+                    description: The client ID.
+                  green_angel_id:
+                    type: integer
+                    description: The green angel ID.
+                  hub_id:
+                    type: integer
+                    description: The hub ID.
+                  attendance_date:
                     type: string
-                    description: The attendance name.
+                    description: The attendance date.
+                  limit_date:
+                    type: string
+                    description: The limit date.
+                  is_active:
+                    type: boolean
+                    description: The active status.
+                  client:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The client ID.
+                      is_active:
+                        type: boolean
+                        description: The active status of the client.
+                  green_angel:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The green angel ID.
+                      name:
+                        type: string
+                        description: The green angel name.
+                      is_active:
+                        type: boolean
+                        description: The active status of the green angel.
+                  hub:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The hub ID.
+                      name:
+                        type: string
+                        description: The hub name.
+                      is_active:
+                        type: boolean
+                        description: The active status of the hub.
       401:
         description: Unauthorized
       500:
@@ -65,7 +161,27 @@ def get_attendances(attendance_controller: AttendanceController = Provide[Contai
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
-    return jsonify(attendance_controller.get_attendances(page, per_page))
+    client_id = request.args.get('client_id', type=int)
+    green_angel_id = request.args.get('green_angel_id', type=int)
+    green_angel_name = request.args.get('green_angel_name')
+    hub_id = request.args.get('hub_id', type=int)
+    hub_name = request.args.get('hub_name')
+    attendance_date = request.args.get('attendance_date')
+    limit_date = request.args.get('limit_date')
+
+    order_by = request.args.get('order_by')
+    order_direction = request.args.get('order_direction')
+
+    filters = {
+        'client_id': client_id,
+        'green_angel_id': green_angel_id,
+        'green_angel_name': green_angel_name,
+        'hub_id': hub_id,
+        'hub_name': hub_name,
+        'attendance_date': attendance_date,
+        'limit_date': limit_date
+    }
+    return jsonify(attendance_controller.get_attendances(page, per_page, filters, order_by, order_direction))
 
 @attendance_bp.route('/<int:attendance_id>', methods=['GET'])
 @inject

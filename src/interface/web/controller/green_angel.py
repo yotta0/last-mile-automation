@@ -6,8 +6,8 @@ class GreenAngelController:
     def __init__(self, green_angel_service: GreenAngelService):
         self.green_angel_service = green_angel_service
 
-    def get_green_angels(self, page: int, per_page: int) -> dict:
-        return self.green_angel_service.get_green_angels_paginated(page, per_page)
+    def get_green_angels(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
+        return self.green_angel_service.get_green_angels_paginated(page, per_page, filters, order_by, order_direction)
 
     def get_green_angel(self, green_angel_id: int) -> dict:
         return self.green_angel_service.find_green_angel(green_angel_id)

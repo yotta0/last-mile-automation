@@ -8,8 +8,8 @@ class UserController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service
 
-    def get_users(self) -> List[dict]:
-        return self.user_service.get_users_paginated()
+    def get_users(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
+        return self.user_service.get_users_paginated(page, per_page, filters, order_by, order_direction)
 
     def get_user(self, user_id: int) -> dict:
         return self.user_service.find_user(user_id)

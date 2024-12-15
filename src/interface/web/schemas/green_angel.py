@@ -13,10 +13,11 @@ class GreenAngelSchema(BaseModel):
         from_attributes = True
 
 class GreenAngelsPaginatedSchema(BaseModel):
+    size: int
     total_pages: int
     page: int
     per_page: int
-    green_angels: list[GreenAngelSchema]
+    items: list[GreenAngelSchema]
 
     class Config:
         arbitrary_types_allowed = True

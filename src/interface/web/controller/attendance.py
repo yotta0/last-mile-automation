@@ -6,8 +6,8 @@ class AttendanceController:
     def __init__(self, attendance_service: AttendanceService):
         self.attendance_service = attendance_service
 
-    def get_attendances(self, page: int, per_page: int) -> dict:
-        return self.attendance_service.get_attendances_paginated(page, per_page)
+    def get_attendances(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
+        return self.attendance_service.get_attendances_paginated(page, per_page, filters, order_by, order_direction)
 
     def get_attendance(self, attendance_id: int) -> dict:
         return self.attendance_service.find_attendance(attendance_id)

@@ -6,7 +6,7 @@ from src.domain.entities.client import Client
 class IClientRepository(ABC):
 
     @abstractmethod
-    def get_clients_paginated(self, page: int, per_page: int):
+    def get_clients_paginated(self, page: int, per_page: int, order_by: str, order_direction: str) -> dict:
         pass
 
     @abstractmethod

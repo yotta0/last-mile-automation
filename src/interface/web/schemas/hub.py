@@ -13,10 +13,11 @@ class HubSchema(BaseModel):
         from_attributes = True
 
 class HubsPaginatedSchema(BaseModel):
+    size: int
     total_pages: int
     page: int
     per_page: int
-    hubs: list[HubSchema]
+    items: list[HubSchema]
 
     class Config:
         arbitrary_types_allowed = True

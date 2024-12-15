@@ -6,7 +6,7 @@ from src.domain.entities.hub import Hub
 class IHubRepository(ABC):
 
     @abstractmethod
-    def get_hubs_paginated(self, page: int, per_page: int):
+    def get_hubs_paginated(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
         pass
 
     @abstractmethod

@@ -17,6 +17,17 @@ class UserSchema(BaseModel):
         arbitrary_types_allowed = True
         from_attributes = True
 
+class UsersPaginatedSchema(BaseModel):
+    size: int
+    total_pages: int
+    page: int
+    per_page: int
+    items: list[UserSchema]
+
+    class Config:
+        arbitrary_types_allowed = True
+        from_attributes = True
+
 class UserCreateSchema(BaseModel):
     name: str
     email: EmailStr
