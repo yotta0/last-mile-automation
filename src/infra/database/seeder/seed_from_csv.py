@@ -12,7 +12,7 @@ load_dotenv()
 
 SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CSV_FILE_PATH = os.path.join(BASE_DIR, os.getenv('CSV_FILE_NAME'))
+CSV_FILE_PATH = os.path.join(BASE_DIR, os.getenv('CSV_FILE_NAME', 'data.csv'))
 
 conn_pool = psycopg2.pool.SimpleConnectionPool(1, 10, SQLALCHEMY_DATABASE_URI)
 
