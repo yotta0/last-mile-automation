@@ -12,20 +12,12 @@ O Projeto é uma aplicação projetada para gerenciar e automatizar o cálculo d
 
 [Estrutura do Projeto e Clean Architecture](docs/project_structure.md)
 
+[Modelagem do banco de dados](docs/database_model.md)
+
 
 ## Executando o Projeto
 
 ### Configuração de Ambiente
-
-
-#### **Importação de planilha CSV para popular dados iniciais**
-
-1. para importar dados do CSV para o banco de dados, é necessário renomear o arquivo .csv para seed.csv e colocá-lo na pasta src/infra/database/seeder/seed.csv
-
-```bash
-mv ./planilha_exemplo.csv src/infra/database/seeder/seed.csv
-```
-**Nota**: Caso o arquivo seed.csv não for encontrado, o sistema irá criar um banco de dados apenas com o seed basico de Usuario admin do sistema.
 
 #### **Configuração de Variáveis de Ambiente**
 2. Copie o arquivo `.env_example` e renomeie a cópia para `.env`. em seguida Preencha as variáveis de ambiente necessárias para o ambiente de desenvolvimento.
@@ -33,6 +25,7 @@ mv ./planilha_exemplo.csv src/infra/database/seeder/seed.csv
 ```bash
   cp .env_example .env
 ```
+
 [Informações sobre as variáveis de ambiente](docs/env_variables.md)
 
 ### Executando Localmente
@@ -95,6 +88,24 @@ para rodar em background
 **Nota**: Isso pode levar algum tempo na primeira execução, pois o Docker precisa baixar as imagens necessárias e configurar o ambiente.
 **Nota**: O Docker Compose irá configurar automaticamente o ambiente de desenvolvimento, incluindo a criação de um banco de dados PostgreSQL e a execução das migrações necessárias. A aplicação estará disponível em `http://localhost:5000`.
 
+#### **Importação de planilha CSV para popular dados iniciais**
+
+1. para importar dados do CSV para o banco de dados, é necessario colocar o arquivo CSV na pasta src/infra/database/seeder
+
+```bash
+mv ./planilha_exemplo.csv src/infra/database/seeder/planilha_exemplo.csv
+```
+2. Apos isso configurar a variavel de ambiente `CSV_FILE_PATH` no arquivo `.env` com o nome do arquivo CSV
+
+**Nota**: Caso o arquivo não for encontrado, o sistema irá criar um banco de dados apenas com o seed basico de Usuario admin do sistema.
+
+3.Apos isso rode manualmente o seeder:
+```bash
+    python src/infra/database/seeder/seeder.py
+  ```
+**Nota**: O seeder irá popular o banco de dados com os dados do arquivo seed.csv isso irá demorar um pouco dependendo da quantidade de dados.
+**Nota**: Importante rodar o seeder após a criação do banco de dados, e as migrações com o comando `alembic upgrade head`
+
 ## Testando o Projeto
 
 **Nota**: O processo de testes ainda está em desenvolvimento e não cobre todas as funcionalidades do sistema.
@@ -105,9 +116,21 @@ pytest
 ```
 
 ## Documentação da API
-
+**Nota**: o usuario padrão para utilizar a API é:
+```plaintext
+email: admin@admin.com
+senha: admin
+```
+###  Swagger
 A documentação de todas as rotas pode ser acessada através do seguinte endereço:
 
 ```plaintext
-localhost:5000/apidocs
+localhost:5000/swagger
 ```
+### Postman
+se preferir utilizar o Postman
+basta importar o arquivo `lastmile.postman_collection.json` que se encontra na pasta docs/postman
+
+(Importar -> Upload Files -> Selecionar o arquivo `Last Mile automation.postman_collection`)
+
+[Rotas Postman](docs/postman/Last Mile automation.postman_collection.json)

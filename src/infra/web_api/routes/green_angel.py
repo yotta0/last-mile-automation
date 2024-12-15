@@ -62,6 +62,8 @@ def get_green_angels(green_angel_controller: GreenAngelController = Provide[Cont
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
@@ -107,6 +109,8 @@ def get_green_angel(green_angel_id: int, green_angel_controller: GreenAngelContr
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(green_angel_controller.get_green_angel(green_angel_id))
 
@@ -149,6 +153,8 @@ def create_green_angel(green_angel_controller: GreenAngelController = Provide[Co
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     green_angel = GreenAngelCreateSchema(**request.json)
     return jsonify(green_angel_controller.create_green_angel(green_angel))
@@ -197,6 +203,8 @@ def update_green_angel(green_angel_id: int, green_angel_controller: GreenAngelCo
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     green_angel = GreenAngelUpdateSchema(**request.json)
     return jsonify(green_angel_controller.update_green_angel(green_angel_id, green_angel))
@@ -225,5 +233,7 @@ def delete_green_angel(green_angel_id: int, green_angel_controller: GreenAngelCo
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(green_angel_controller.delete_green_angel(green_angel_id))

@@ -62,6 +62,8 @@ def get_hubs(hub_controller: HubController = Provide[Container.hub_controller]):
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
@@ -107,6 +109,8 @@ def get_hub(hub_id: int, hub_controller: HubController = Provide[Container.hub_c
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(hub_controller.get_hub(hub_id))
 
@@ -149,6 +153,8 @@ def create_hub(hub_controller: HubController = Provide[Container.hub_controller]
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     hub = HubCreateSchema(**request.json)
     return jsonify(hub_controller.create_hub(hub))
@@ -197,6 +203,8 @@ def update_hub(hub_id: int, hub_controller: HubController = Provide[Container.hu
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     hub = HubUpdateSchema(**request.json)
     return jsonify(hub_controller.update_hub(hub_id, hub))
@@ -225,5 +233,7 @@ def delete_hub(hub_id: int, hub_controller: HubController = Provide[Container.hu
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(hub_controller.delete_hub(hub_id))

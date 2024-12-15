@@ -107,7 +107,7 @@ class AttendanceRepository(IAttendanceRepository):
         return attendance
 
     def get_sla_metrics(self) -> dict:
-        query = self.db.query(Attendance)
+        query = self.db.query(Attendance).filter(Attendance.is_active == True)
         total = query.count()
         on_time = query.filter(Attendance.attendance_date <= Attendance.limit_date).count()
         late = total - on_time
@@ -115,8 +115,8 @@ class AttendanceRepository(IAttendanceRepository):
             'total': total,
             'on_time': on_time,
             'late': late,
-            'on_time_percentage': (on_time / total) * 100 if total > 0 else 0,
-            'late_percentage': (late / total) * 100 if total > 0 else 0
+            'on_time_percentage': round((on_time / total) * 100, 2) if total > 0 else 0,
+            'late_percentage': round((late / total) * 100, 2) if total > 0 else 0
         }
 
     def get_sla_paginated_by_green_angels(self, page: int, per_page: int, filters: dict = None, order_by: str = 'id', order_direction: str = 'asc') -> dict:
@@ -127,7 +127,7 @@ class AttendanceRepository(IAttendanceRepository):
             func.sum(
                 func.cast(Attendance.attendance_date <= Attendance.limit_date, Integer)
             ).label('on_time')
-        ).join(Attendance, Attendance.green_angel_id == GreenAngel.id)
+        ).join(Attendance, Attendance.green_angel_id == GreenAngel.id).filter(Attendance.is_active == True)
 
         if filters:
             if 'green_angel_name' in filters and filters['green_angel_name']:
@@ -171,8 +171,8 @@ class AttendanceRepository(IAttendanceRepository):
                 'total': total_count,
                 'on_time': on_time,
                 'late': late,
-                'on_time_percentage': (on_time / total_count) * 100 if total_count > 0 else 0,
-                'late_percentage': (late / total_count) * 100 if total_count > 0 else 0
+                'on_time_percentage': round((on_time / total_count) * 100) if total_count > 0 else 0,
+                'late_percentage': round((late / total_count) * 100, 2) if total_count > 0 else 0
             }
             items.append(sla_metrics)
 
@@ -192,7 +192,7 @@ class AttendanceRepository(IAttendanceRepository):
             func.sum(
                 func.cast(Attendance.attendance_date <= Attendance.limit_date, Integer)
             ).label('on_time')
-        ).join(Attendance, Attendance.green_angel_id == GreenAngel.id).filter(GreenAngel.id == green_angel_id).group_by(GreenAngel.id).first()
+        ).join(Attendance, Attendance.green_angel_id == GreenAngel.id).filter(GreenAngel.id == green_angel_id).filter(Attendance.is_active == True).group_by(GreenAngel.id).first()
 
         if not query:
             return None
@@ -207,8 +207,8 @@ class AttendanceRepository(IAttendanceRepository):
             'total': total_count,
             'on_time': on_time,
             'late': late,
-            'on_time_percentage': (on_time / total_count) * 100 if total_count > 0 else 0,
-            'late_percentage': (late / total_count) * 100 if total_count > 0 else 0
+            'on_time_percentage': round((on_time / total_count) * 100) if total_count > 0 else 0,
+            'late_percentage': round((late / total_count) * 100, 2) if total_count > 0 else 0
         }
 
     def get_sla_paginated_by_hubs(self, page: int, per_page: int, filters: dict = None, order_by: str = 'id', order_direction: str = 'asc') -> dict:
@@ -219,7 +219,7 @@ class AttendanceRepository(IAttendanceRepository):
             func.sum(
                 func.cast(Attendance.attendance_date <= Attendance.limit_date, Integer)
             ).label('on_time')
-        ).join(Attendance, Attendance.hub_id == Hub.id)
+        ).join(Attendance, Attendance.hub_id == Hub.id).filter(Attendance.is_active == True)
 
         if filters:
             if 'hub_name' in filters and filters['hub_name']:
@@ -263,8 +263,8 @@ class AttendanceRepository(IAttendanceRepository):
                 'total': total_count,
                 'on_time': on_time,
                 'late': late,
-                'on_time_percentage': (on_time / total_count) * 100 if total_count > 0 else 0,
-                'late_percentage': (late / total_count) * 100 if total_count > 0 else 0
+                'on_time_percentage': round((on_time / total_count) * 100) if total_count > 0 else 0,
+                'late_percentage': round((late / total_count) * 100, 2) if total_count > 0 else 0
             }
             items.append(sla_metrics)
 
@@ -284,7 +284,7 @@ class AttendanceRepository(IAttendanceRepository):
             func.sum(
                 func.cast(Attendance.attendance_date <= Attendance.limit_date, Integer)
             ).label('on_time')
-        ).join(Attendance, Attendance.hub_id == Hub.id).filter(Hub.id == hub_id).group_by(Hub.id).first()
+        ).join(Attendance, Attendance.hub_id == Hub.id).filter(Hub.id == hub_id).filter(Attendance.is_active == True).group_by(Hub.id).first()
 
         if not query:
             return None
@@ -299,8 +299,8 @@ class AttendanceRepository(IAttendanceRepository):
             'total': total_count,
             'on_time': on_time,
             'late': late,
-            'on_time_percentage': (on_time / total_count) * 100 if total_count > 0 else 0,
-            'late_percentage': (late / total_count) * 100 if total_count > 0 else 0
+            'on_time_percentage': round((on_time / total_count) * 100) if total_count > 0 else 0,
+            'late_percentage': round((late / total_count) * 100, 2) if total_count > 0 else 0
         }
 
     def get_productivity_paginated(self, page: int, per_page: int, filters: dict = None, order_by: str = 'total_attendances', order_direction: str = 'desc') -> dict:
@@ -311,7 +311,7 @@ class AttendanceRepository(IAttendanceRepository):
         query = self.db.query(
             Attendance.green_angel_id,
             func.count(Attendance.id).label('total_attendances')
-        ).filter(Attendance.attendance_date.isnot(None))
+        ).filter(Attendance.attendance_date.isnot(None)).filter(Attendance.is_active == True)
 
         if filters.get('date_from'):
             date_from = dt.strptime(filters['date_from'], '%Y-%m-%d %H:%M:%S')

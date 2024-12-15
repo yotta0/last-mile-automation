@@ -23,6 +23,7 @@ class ClientsPaginatedSchema(BaseModel):
         from_attributes = True
 
 class ClientCreateSchema(BaseModel):
+    id: Optional[int] = None
     is_active: Optional[bool] = None
 
     class Config:
@@ -31,7 +32,6 @@ class ClientCreateSchema(BaseModel):
 
 
 class ClientUpdateSchema(BaseModel):
-    name: Optional[str] = None
     is_active: Optional[bool] = None
 
     class Config:

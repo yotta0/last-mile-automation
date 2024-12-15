@@ -103,6 +103,8 @@ def get_client(client_id: int, client_controller: ClientController = Provide[Con
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(client_controller.get_client(client_id))
 

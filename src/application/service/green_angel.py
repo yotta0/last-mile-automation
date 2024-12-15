@@ -43,9 +43,9 @@ class GreenAngelService:
     def delete_green_angel(self, green_angel_id: int) -> dict:
         green_angel = self.green_angel_repository.find_by_id(green_angel_id)
         if not green_angel:
-            raise DomainException(ErrorCode.ATTENDANCE_NOT_FOUND)
+            raise DomainException(ErrorCode.GREEN_ANGEL_NOT_FOUNDN)
         if not green_angel.is_active:
-            raise DomainException(ErrorCode.ATTENDANCE_ALREADY_DELETED)
+            raise DomainException(ErrorCode.GREEN_ANGEL_ALREADY_DELETED )
         green_angel.is_active = False
         self.green_angel_repository.save(green_angel)
         return GreenAngelSchema.model_validate(green_angel).model_dump()

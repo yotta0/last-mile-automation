@@ -77,12 +77,8 @@
 
 ---
 
-### CSV_FILE_PATH
-**Função:** Define o caminho do arquivo CSV utilizado para popular o banco de dados durante a inicialização.
+### CSV_FILE_NAME
+**Função:** Define o nome do arquivo CSV utilizado para popular o banco de dados.
 
-- Caminho padrão recomendado: `src/infra/database/seeder/seed.csv`
-
-**Nota:** Certifique-se de que o arquivo `seed.csv` esteja no caminho especificado e dentro
+**Nota:** Certifique-se de que o arquivo esteja localizado no diretório `src/infra/database/seeder`.
 **Nota:** caso o seed não seja encontrado o banco de dados será populado com dados padrões.
-**Nota:** Caso o container já tenha sido iniciado, basta colocar o arquivo no caminho especificado e rodar o comando `docker-compose up --build` novamente.
-

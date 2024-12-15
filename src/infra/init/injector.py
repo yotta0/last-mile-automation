@@ -50,7 +50,7 @@ class Container(containers.DeclarativeContainer):
 
     user_service = providers.Factory(UserService, user_repository=user_repository, auth_service=auth_service)
 
-    attendance_service = providers.Factory(AttendanceService, attendance_repository=attendance_repository)
+    attendance_service = providers.Factory(AttendanceService, attendance_repository=attendance_repository, green_angel_repository=green_angel_repository, hub_repository=hub_repository, client_repository=client_repository)
 
     green_angel_service = providers.Factory(GreenAngelService, green_angel_repository=green_angel_repository)
 

@@ -17,7 +17,7 @@ class HubService:
     def find_hub(self, hub_id: int) -> dict:
         hub = self.hub_repository.find_by_id(hub_id)
         if not hub:
-            raise DomainException(ErrorCode.GREEN_ANGEL_NOT_FOUND)
+            raise DomainException(ErrorCode.HUB_NOT_FOUND)
         return HubSchema.model_validate(hub).model_dump()
 
     def create_hub(self, hub_create: HubSchema) -> dict:
@@ -31,7 +31,7 @@ class HubService:
     def update_hub(self, hub_id: int, hub_update: HubUpdateSchema) -> dict:
         hub = self.hub_repository.find_by_id(hub_id)
         if not hub:
-            raise DomainException(ErrorCode.ATTENDANCE_NOT_FOUND)
+            raise DomainException(ErrorCode.HUB_NOT_FOUND)
 
         if hub_update.name:
             hub.name = hub_update.name
@@ -43,9 +43,9 @@ class HubService:
     def delete_hub(self, hub_id: int) -> dict:
         hub = self.hub_repository.find_by_id(hub_id)
         if not hub:
-            raise DomainException(ErrorCode.ATTENDANCE_NOT_FOUND)
+            raise DomainException(ErrorCode.HUB_NOT_FOUND)
         if not hub.is_active:
-            raise DomainException(ErrorCode.ATTENDANCE_ALREADY_DELETED)
+            raise DomainException(ErrorCode.HUB_ALREADY_DELETED)
         hub.is_active = False
         self.hub_repository.save(hub)
         return HubSchema.model_validate(hub).model_dump()

@@ -17,14 +17,19 @@ class ClientService:
     def find_client(self, client_id: int) -> dict:
         client = self.client_repository.find_by_id(client_id)
         if not client:
-            raise DomainException(ErrorCode.GREEN_ANGEL_NOT_FOUND)
+            raise DomainException(ErrorCode.CLIENT_NOT_FOUND)
         return ClientSchema.model_validate(client).model_dump()
 
     def create_client(self, client_create: ClientSchema) -> dict:
-        client = Client(
-            id=client_create.id,
-            is_active=client_create.is_active
-        )
+        if client_create.id:
+            client = Client(
+                id=client_create.id,
+                is_active=client_create.is_active
+            )
+        else:
+            client = Client(
+                is_active=client_create.is_active
+            )
         self.client_repository.save(client)
         return ClientSchema.model_validate(client).model_dump()
 
@@ -41,9 +46,9 @@ class ClientService:
     def delete_client(self, client_id: int) -> dict:
         client = self.client_repository.find_by_id(client_id)
         if not client:
-            raise DomainException(ErrorCode.ATTENDANCE_NOT_FOUND)
+            raise DomainException(ErrorCode.CLIENT_NOT_FOUND)
         if not client.is_active:
-            raise DomainException(ErrorCode.ATTENDANCE_ALREADY_DELETED)
+            raise DomainException(ErrorCode.CLIENT_ALREADY_DELETED)
         client.is_active = False
         self.client_repository.save(client)
         return ClientSchema.model_validate(client).model_dump()
