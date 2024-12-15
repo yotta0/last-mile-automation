@@ -11,7 +11,7 @@ import time
 load_dotenv()
 
 SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
-CSV_FILE_PATH = os.getenv('CSV_FILE_PATH', 'src/infra/database/seeder/seed.csv')
+CSV_FILE_PATH = 'src/infra/database/seeder/seed.csv'
 
 conn_pool = psycopg2.pool.SimpleConnectionPool(1, 10, SQLALCHEMY_DATABASE_URI)
 
