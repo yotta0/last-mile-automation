@@ -17,13 +17,19 @@ O Projeto é uma aplicação projetada para gerenciar e automatizar o cálculo d
 
 ## Executando o Projeto
 
+1. Clone o repositório:
+```bash
+git clone https://github.com/yotta0/last-mile-automation.git
+cd last-mile-automation
+```
+
 ### Configuração de Ambiente
 
 #### **Configuração de Variáveis de Ambiente**
 2. Copie o arquivo `.env_example` e renomeie a cópia para `.env`. em seguida Preencha as variáveis de ambiente necessárias para o ambiente de desenvolvimento.
 
 ```bash
-  cp .env_example .env
+  cp .env.example .env
 ```
 
 [Informações sobre as variáveis de ambiente](docs/env_variables.md)
@@ -59,9 +65,9 @@ ou
    ```bash
    alembic upgrade head
    ```
-5.Caso queira rode o seeder manualmente:
+5.rode o seeder de usuario, para criar o usuario padrão do sistema:
     ```bash
-    python src/infra/database/seeder/seeder.py
+    python src/infra/database/seeder/seed_users.py
     ```
 6.Inicie o servidor de desenvolvimento:
 
@@ -75,13 +81,13 @@ Apos isso a aplicação estará disponível em `http://localhost:5000`.
 Para executar o projeto com Docker, certifique-se de que Docker e Docker Compose estão instalados. Em seguida, use o seguinte comando:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 ou 
 
 ```bash
-docker-compose up -- build -d
+docker compose up --build -d
 ```
 para rodar em background
 
@@ -101,7 +107,7 @@ mv ./planilha_exemplo.csv src/infra/database/seeder/planilha_exemplo.csv
 
 3.Apos isso rode manualmente o seeder:
 ```bash
-    python src/infra/database/seeder/seeder.py
+    python src/infra/database/seeder/seed_from_csv.py
   ```
 **Nota**: O seeder irá popular o banco de dados com os dados do arquivo seed.csv isso irá demorar um pouco dependendo da quantidade de dados.
 **Nota**: Importante rodar o seeder após a criação do banco de dados, e as migrações com o comando `alembic upgrade head`
@@ -121,6 +127,8 @@ pytest
 email: admin@admin.com
 senha: admin
 ```
+[Fluxo de Autenticação](docs/authentication_flow.md)
+
 ###  Swagger
 A documentação de todas as rotas pode ser acessada através do seguinte endereço:
 
