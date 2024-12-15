@@ -57,3 +57,21 @@ class AttendanceService:
         attendance.is_active = False
         self.attendance_repository.save(attendance)
         return AttendanceSchema.model_validate(attendance).model_dump()
+
+    def get_sla_metrics(self) -> dict:
+        return self.attendance_repository.get_sla_metrics()
+
+    def get_sla_paginated_by_green_angels(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
+        return self.attendance_repository.get_sla_paginated_by_green_angels(page, per_page, filters, order_by, order_direction)
+
+    def find_sla_by_green_angel(self, green_angel_id: int) -> dict:
+        return self.attendance_repository.find_sla_by_green_angel_id(green_angel_id)
+
+    def get_sla_paginated_by_hubs(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
+        return self.attendance_repository.get_sla_paginated_by_hubs(page, per_page, filters, order_by, order_direction)
+
+    def find_sla_by_hub(self, hub_id: int) -> dict:
+        return self.attendance_repository.find_sla_by_hub_id(hub_id)
+
+    def get_productivity_paginated(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
+        return self.attendance_repository.get_productivity_paginated(page, per_page, filters, order_by, order_direction)
