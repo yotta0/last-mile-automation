@@ -1,140 +1,113 @@
 # Automação de Last Mile
+[![Python](https://img.shields.io/badge/Python-3.8-blue)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.1.0-blue)](https://flask.palletsprojects.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14.6-blue)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Yes-blue)](https://www.docker.com/)
+[![Docker Compose](https://img.shields.io/badge/Docker%20Compose-Yes-blue)](https://docs.docker.com/compose/)
+[![Clean Architecture](https://img.shields.io/badge/Clean%20Architecture-Yes-blue)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 
-Este projeto é uma API desenvolvida com Flask, que inclui autenticação, gerenciamento de atendimentos e integração com um banco de dados PostgreSQL. O objetivo principal é automatizar o cálculo dos indicadores operacionais para a operação de Last Mile, focando especificamente nos seguintes KPIs:
+O Projeto é uma aplicação projetada para gerenciar e automatizar o cálculo de indicadores operacionais para operações de last mile. Ele oferece funcionalidades robustas para autenticação, gerenciamento de atendimentos, Green Angels, clientes e polos de atendimento, além de uma integração eficiente com bancos de dados e ferramentas de contêinerização.
 
-- **Produtividade por Green Angel**
-- **SLA de cada base logística**
-- **SLA de cada Green Angel**
+## Desenvolvimento do Projeto
 
----
+[Estrutura do Projeto e Clean Architecture](docs/project_structure.md)
 
-## Requisitos
 
-- Python 3.8+
-- PostgreSQL
-- pip
-- (Opcional) Docker e Docker Compose
+## Executando o Projeto
 
----
+### Configuração de Ambiente
 
-## Instalação Local
 
-### Passo a passo
+#### **Importação de planilha CSV para popular dados iniciais**
 
-1. **Clone o repositório**:
+1. para importar dados do CSV para o banco de dados, é necessário renomear o arquivo .csv para seed.csv e colocá-lo na pasta src/infra/database/seeder/seed.csv
 
-    ```bash
-    git clone https://github.com/yotta0/last-mile-automation.git
-    cd last-mile-automation
-    ```
+```bash
+mv ./planilha_exemplo.csv src/infra/database/seeder/seed.csv
+```
+**Nota**: Caso o arquivo seed.csv não for encontrado, o sistema irá criar um banco de dados apenas com o seed basico de Usuario admin do sistema.
 
-2. **Crie e ative um ambiente virtual**:
+#### **Configuração de Variáveis de Ambiente**
+2. Copie o arquivo `.env_example` e renomeie a cópia para `.env`. em seguida Preencha as variáveis de ambiente necessárias para o ambiente de desenvolvimento.
 
+```bash
+  cp .env_example .env
+```
+[Informações sobre as variáveis de ambiente](docs/env_variables.md)
+
+### Executando Localmente
+
+Para executar o projeto localmente, siga os passos abaixo:
+
+1. Crie um virtual env do python e ative-o:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
+ou 
     ```bash
     python -m venv venv
-    source venv/bin/activate  # No Windows use `venv\Scripts\activate`
+    venv\Scripts\activate
     ```
+(no Windows)
+**Nota**: O uso de um ambiente virtual não é obrigatório, mas é altamente recomendado para evitar conflitos de dependências.
 
-3. **Instale as dependências**:
+2.Instale as dependências necessárias:
 
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3.Defina a variavel do flask manualmente:
+   ```bash
+   export FLASK_APP=src/main.py
+   ```
+4.Rode os migrations para criar as tabelas no banco de dados:
+   ```bash
+   alembic upgrade head
+   ```
+5.Caso queira rode o seeder manualmente:
     ```bash
-    pip install -r requirements.txt
+    python src/infra/database/seeder/seeder.py
     ```
+6.Inicie o servidor de desenvolvimento:
 
-4. **Configure as variáveis de ambiente**:
+   ```bash
+   flask run --host=0.0.0.0 --port=5000
+   ```
+Apos isso a aplicação estará disponível em `http://localhost:5000`.
 
-    - Copie o arquivo de exemplo:
+### Utilizando Docker
 
-        ```bash
-        cp .env.example .env
-        ```
+Para executar o projeto com Docker, certifique-se de que Docker e Docker Compose estão instalados. Em seguida, use o seguinte comando:
 
-    - Edite o arquivo `.env` e preencha os campos necessários, como as credenciais do banco de dados e a URL da aplicação.
+```bash
+docker-compose up --build
+```
 
-5. **Configure o banco de dados**:
+ou 
 
-    - Crie as tabelas executando as migrações:
+```bash
+docker-compose up -- build -d
+```
+para rodar em background
 
-        ```bash
-        flask db upgrade
-        ```
+**Nota**: Isso pode levar algum tempo na primeira execução, pois o Docker precisa baixar as imagens necessárias e configurar o ambiente.
+**Nota**: O Docker Compose irá configurar automaticamente o ambiente de desenvolvimento, incluindo a criação de um banco de dados PostgreSQL e a execução das migrações necessárias. A aplicação estará disponível em `http://localhost:5000`.
 
-6. **Opcional: Seed de usuários**:
+## Testando o Projeto
 
-    - Crie o usuário administrador com o comando:
+**Nota**: O processo de testes ainda está em desenvolvimento e não cobre todas as funcionalidades do sistema.
 
-        ```bash
-        flask seed_users
-        ```
+1. para executar os testes, navegue até a pasta raiz do projeto, dentro do container do app ou localmente, execute o seguinte comando:
+```bash
+pytest
+```
 
-7. **Inicie a aplicação**:
+## Documentação da API
 
-    ```bash
-    flask run
-    ```
+A documentação de todas as rotas pode ser acessada através do seguinte endereço:
 
-    A API estará acessível em `http://127.0.0.1:5000` por padrão.
-
----
-
-## Instalação com Docker
-
-### Passo a passo
-
-1. **Clone o repositório**:
-
-    ```bash
-    git clone https://github.com/yotta0/last-mile-automation.git
-    cd last-mile-automation
-    ```
-
-2. **Configure as variáveis de ambiente**:
-
-    - Copie o arquivo de exemplo:
-
-        ```bash
-        cp .env.example .env
-        ```
-
-    - Edite o arquivo `.env` e preencha os campos necessários.
-
-3. **Inicie os containers**:
-
-    - Construa e inicie os containers:
-
-        ```bash
-        docker-compose up --build
-        ```
-
-4. **Execute as migrações**:
-
-    - Configure o banco de dados executando as migrações dentro do container:
-
-        ```bash
-        docker-compose exec app flask db upgrade
-        ```
-
-5. **Opcional: Seed de usuários**:
-
-    - Crie o usuário administrador:
-
-        ```bash
-        docker-compose exec app flask seed_users
-        ```
-
-6. **Acesse a aplicação**:
-
-    - A API estará disponível em `http://localhost:<PORTA>` (substitua `<PORTA>` pela porta definida no arquivo `docker-compose.yml` ou no `.env`).
-
----
-
-## Sugestão de Melhorias Futura
-
-- Adicionar testes automatizados para validação das funcionalidades principais.
-- Criar uma pipeline CI/CD para automatizar testes e implantações.
-- Incluir documentação interativa da API com Swagger ou Redoc.
-
----
-
-Com essas instruções, você pode configurar e executar o projeto de forma local ou com Docker, dependendo das suas preferências e necessidades.
-
+```plaintext
+localhost:5000/apidocs
+```
