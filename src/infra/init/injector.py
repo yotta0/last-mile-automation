@@ -30,7 +30,8 @@ class Container(containers.DeclarativeContainer):
         "src.infra.web_api.routes.attendance",
         "src.infra.web_api.routes.green_angel",
         "src.infra.web_api.routes.hub",
-        "src.infra.web_api.routes.client"
+        "src.infra.web_api.routes.client",
+        "src.infra.web_api.routes.metrics"
     ])
     db = providers.Resource(get_db)
     user_repository = providers.Factory(UserRepository, db=db)

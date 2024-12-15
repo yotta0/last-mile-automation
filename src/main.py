@@ -10,6 +10,7 @@ from src.infra.web_api.routes.attendance import attendance_bp
 from src.infra.web_api.routes.green_angel import green_angel_bp
 from src.infra.web_api.routes.hub import hub_bp
 from src.infra.web_api.routes.client import client_bp
+from src.infra.web_api.routes.metrics import metric_bp
 
 from src.domain.exception.domain_exception import DomainException
 from src.interface.exception.interface_exception import InterfaceException
@@ -62,6 +63,7 @@ app.register_blueprint(attendance_bp)
 app.register_blueprint(green_angel_bp)
 app.register_blueprint(hub_bp)
 app.register_blueprint(client_bp)
+app.register_blueprint(metric_bp)
 
 swagger = Swagger(app)
 
