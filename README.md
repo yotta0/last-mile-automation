@@ -105,10 +105,16 @@ mv ./planilha_exemplo.csv src/infra/database/seeder/planilha_exemplo.csv
 
 **Nota**: Caso o arquivo não for encontrado, o sistema irá criar um banco de dados apenas com o seed basico de Usuario admin do sistema.
 
-3.Apos isso rode manualmente o seeder:
+3.Apos isso rode localmente
 ```bash
     python src/infra/database/seeder/seed_from_csv.py
   ```
+ou dentro do container do app no docker
+```bash
+docker compose exec app python src/infra/database/seeder/seed_from_csv.py
+```
+*Nota*: Talvez seja necessario rodar o build do container novamente para que o arquivo seja encontrado
+
 **Nota**: O seeder irá popular o banco de dados com os dados do arquivo seed.csv isso irá demorar um pouco dependendo da quantidade de dados.
 **Nota**: Importante rodar o seeder após a criação do banco de dados, e as migrações com o comando `alembic upgrade head`
 
