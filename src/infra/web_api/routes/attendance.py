@@ -158,6 +158,8 @@ def get_attendances(attendance_controller: AttendanceController = Provide[Contai
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
@@ -216,6 +218,8 @@ def get_attendance(attendance_id: int, attendance_controller: AttendanceControll
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(attendance_controller.get_attendance(attendance_id))
 
@@ -258,6 +262,8 @@ def create_attendance(attendance_controller: AttendanceController = Provide[Cont
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     attendance = AttendanceCreateSchema(**request.json)
     return jsonify(attendance_controller.create_attendance(attendance))
@@ -306,6 +312,8 @@ def update_attendance(attendance_id: int, attendance_controller: AttendanceContr
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     attendance = AttendanceUpdateSchema(**request.json)
     return jsonify(attendance_controller.update_attendance(attendance_id, attendance))
@@ -334,5 +342,7 @@ def delete_attendance(attendance_id: int, attendance_controller: AttendanceContr
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(attendance_controller.delete_attendance(attendance_id))

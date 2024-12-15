@@ -37,6 +37,8 @@ def get_users(user_controller: UserController = Provide[Container.user_controlle
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
@@ -84,6 +86,8 @@ def get_user(user_id: int, user_controller: UserController = Provide[Container.u
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(user_controller.get_user(user_id))
 
@@ -126,6 +130,8 @@ def create_user(user_controller: UserController = Provide[Container.user_control
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     user = UserCreateSchema(**request.json)
     return jsonify(user_controller.create_user(user))
@@ -174,6 +180,8 @@ def update_user(user_id: int, user_controller: UserController = Provide[Containe
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     user = UserUpdateSchema(**request.json)
     return jsonify(user_controller.update_user(user_id, user))
@@ -202,5 +210,7 @@ def delete_user(user_id: int, user_controller: UserController = Provide[Containe
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(user_controller.delete_user(user_id))

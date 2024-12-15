@@ -69,6 +69,8 @@ def get_productivity_metrics(attendance_controller: AttendanceController = Provi
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
@@ -109,6 +111,8 @@ def get_sla_metrics(attendance_controller: AttendanceController = Provide[Contai
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(attendance_controller.get_sla_metrics())
 
@@ -139,6 +143,8 @@ def get_sla_by_green_angels(attendance_controller: AttendanceController = Provid
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
@@ -187,6 +193,8 @@ def get_sla_by_green_angel(green_angel_id: int, attendance_controller: Attendanc
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(attendance_controller.get_sla_by_green_angel(green_angel_id))
 
@@ -218,6 +226,8 @@ def get_sla_by_hubs(attendance_controller: AttendanceController = Provide[Contai
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
@@ -266,5 +276,7 @@ def get_sla_by_hub(hub_id: int, attendance_controller: AttendanceController = Pr
         description: Unauthorized
       500:
         description: Internal server error
+    security:
+      - Bearer: []
     """
     return jsonify(attendance_controller.get_sla_by_hub(hub_id))

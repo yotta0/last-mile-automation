@@ -3,6 +3,7 @@ from flask.json.provider import DefaultJSONProvider
 from pydantic import ValidationError
 from flasgger import Swagger
 
+from src.infra.config.swagger_config import swagger_config
 from src.infra.init.injector import Container
 from src.infra.web_api.routes.user import user_bp
 from src.infra.web_api.routes.auth import auth_bp
@@ -65,7 +66,7 @@ app.register_blueprint(hub_bp)
 app.register_blueprint(client_bp)
 app.register_blueprint(metric_bp)
 
-swagger = Swagger(app)
+swagger = Swagger(app, config=swagger_config)
 
 if __name__ == '__main__':
     app.run()

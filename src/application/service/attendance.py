@@ -1,14 +1,20 @@
 from src.domain.exception.domain_exception import DomainException
 from src.domain.exception.error_code import ErrorCode
 from src.domain.repository.attendance import IAttendanceRepository
+from src.domain.repository.client import IClientRepository
+from src.domain.repository.green_angel import IGreenAngelRepository
+from src.domain.repository.hub import IHubRepository
 from src.domain.entities.attendance import Attendance
 from src.interface.web.schemas.attendance import (
     AttendanceSchema, AttendancesPaginatedSchema, AttendanceUpdateSchema)
 
 
 class AttendanceService:
-    def __init__(self, attendance_repository: IAttendanceRepository):
+    def __init__(self, attendance_repository: IAttendanceRepository, green_angel_repository: IGreenAngelRepository, hub_repository: IHubRepository, client_repository: IClientRepository):
         self.attendance_repository = attendance_repository
+        self.green_angel_repository = green_angel_repository
+        self.hub_repository = hub_repository
+        self.client_repository = client_repository
 
     def get_attendances_paginated(self, page: int, per_page: int, filters: dict, order_by: str, order_direction: str) -> dict:
         attendances = self.attendance_repository.get_attendances_paginated(page, per_page, filters, order_by, order_direction)
@@ -21,6 +27,13 @@ class AttendanceService:
         return AttendanceSchema.model_validate(attendance).model_dump()
 
     def create_attendance(self, attendance_create: AttendanceSchema) -> dict:
+        if not self.green_angel_repository.find_by_id(attendance_create.green_angel_id):
+            raise DomainException(ErrorCode.GREEN_ANGEL_NOT_FOUND)
+        if not self.hub_repository.find_by_id(attendance_create.hub_id):
+            raise DomainException(ErrorCode.HUB_NOT_FOUND)
+        if not self.client_repository.find_by_id(attendance_create.client_id):
+            raise DomainException(ErrorCode.CLIENT_NOT_FOUND)
+
         attendance = Attendance(
             client_id=attendance_create.client_id,
             green_angel_id=attendance_create.green_angel_id,
